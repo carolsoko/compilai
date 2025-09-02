@@ -5,14 +5,6 @@ Contém as versões dos compiladores criados no projeto
 
 # Versão 3.2 - arquivo compilai.html - lista de funcionalidades adicionadas em relação à versão 2.0:
 
-Amplia a biblioteca matemática e melhora o avaliador de expressões, trazendo suporte a:
-
-Funções matemáticas novas: exp(x), ln(x), log(x), sin(x), cos(x), tan(x)
-Constante: pi
-Chamadas aninhadas de funções, ou seja, recursividade (ex.: ln(exp(1)))
-Avaliação direta de funções definidas pelo usuário em expressões (ex.: fat(j))
-Mantém compatibilidade com a sintaxe do VisualG e as funcionalidades já existentes nas versões anteriores (arrays 1-based, mod, escreva(l), estruturas de controle, funções e procedimentos, etc.).
-
 - **exp(x)** exponencial (base e), mapeada para Math.exp(x)
 - **ln(x)**  logaritmo natural, Math.log(x)
 - **log(x)**  logaritmo base 10, Math.log10(x) quando disponível; fallback Math.log(x)/Math.LN10
