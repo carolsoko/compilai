@@ -1,0 +1,13 @@
+{
+  "background_color": "#0b0101",
+  "description": "Compilador Web de Portugol com 99.17% de compatibilidade com VisuAlG.",
+  "dir": "ltr",
+  "display": "standalone",
+  "name": "Compilaí",
+  "orientation": "any",
+  "scope": "/",
+  "short_name": "Compilaí",
+  "start_url": "/",
+  "theme_color": "#24c147",
+  "id": "compilai"
+}
