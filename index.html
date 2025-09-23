@@ -1569,12 +1569,58 @@
             }
 
             executeIf(stmt) {
-                const condition = this.evaluateExpression(stmt.condition);
-                if (this.isTruthy(condition)) {
+                const condition = this.evaluateCondition(stmt.condition);
+                if (condition === true || (typeof condition === 'number' && condition !== 0)) {
                     this.executeStatements(stmt.thenBlock);
                 } else if (stmt.elseBlock.length > 0) {
                     this.executeStatements(stmt.elseBlock);
                 }
+            }
+
+            evaluateCondition(raw) {
+                // Se já for booleano/número, usar diretamente
+                if (typeof raw === 'boolean') return raw;
+                if (typeof raw === 'number') return raw !== 0;
+                const expr = String(raw).trim();
+                // Tentar comparação de nível superior primeiro
+                const tryCmp = (s) => {
+                    let p = 0, b = 0, inStr = false;
+                    const ops = ['>=', '<=', '==', '!=', '<>', '>', '<'];
+                    for (let i = 0; i < s.length; i++) {
+                        const ch = s[i];
+                        if (ch === '"' && s[i - 1] !== '\\') inStr = !inStr;
+                        if (inStr) continue;
+                        if (ch === '(') { p++; continue; }
+                        if (ch === ')') { p--; continue; }
+                        if (ch === '[') { b++; continue; }
+                        if (ch === ']') { b--; continue; }
+                        if (p === 0 && b === 0) {
+                            for (const op of ops) {
+                                if (s.slice(i, i + op.length) === op) {
+                                    const left = s.slice(0, i).trim();
+                                    const right = s.slice(i + op.length).trim();
+                                    const effectiveOp = (op === '<>') ? '!=' : op;
+                                    const l = this.evaluateExpression(left);
+                                    const r = this.evaluateExpression(right);
+                                    const ln = this._toNumber(l);
+                                    const rn = this._toNumber(r);
+                                    switch (effectiveOp) {
+                                        case '>': return ln > rn;
+                                        case '<': return ln < rn;
+                                        case '>=': return ln >= rn;
+                                        case '<=': return ln <= rn;
+                                        case '==': return l === r;
+                                        case '!=': return l !== r;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    return null;
+                };
+                const r = tryCmp(expr);
+                if (r !== null) return r;
+                return this.isTruthy(this.evaluateExpression(expr));
             }
 
             executeFor(stmt) {
@@ -1814,6 +1860,43 @@
                     /[<>=!]/.test(str) ||
                     /\b(e|ou|nao|xou|mod|pi)\b/i.test(str)
                 ) {
+                    // Forçar comparação de nível superior a ser tratada primeiro
+                    const cmp = (() => {
+                        let p = 0, b = 0, inStr = false;
+                        const ops = ['>=', '<=', '==', '!=', '<>', '>', '<'];
+                        for (let i = 0; i < str.length; i++) {
+                            const ch = str[i];
+                            if (ch === '"' && str[i - 1] !== '\\') inStr = !inStr;
+                            if (inStr) continue;
+                            if (ch === '(') { p++; continue; }
+                            if (ch === ')') { p--; continue; }
+                            if (ch === '[') { b++; continue; }
+                            if (ch === ']') { b--; continue; }
+                            if (p === 0 && b === 0) {
+                                for (const op of ops) {
+                                    if (str.slice(i, i + op.length) === op) {
+                                        const left = str.slice(0, i).trim();
+                                        const right = str.slice(i + op.length).trim();
+                                        const effectiveOp = (op === '<>') ? '!=' : op;
+                                        const l = this.evaluateExpression(left);
+                                        const r = this.evaluateExpression(right);
+                                        const ln = this._toNumber(l);
+                                        const rn = this._toNumber(r);
+                                        switch (effectiveOp) {
+                                            case '>': return ln > rn;
+                                            case '<': return ln < rn;
+                                            case '>=': return ln >= rn;
+                                            case '<=': return ln <= rn;
+                                            case '==': return l === r;
+                                            case '!=': return l !== r;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        return null;
+                    })();
+                    if (cmp !== null) return cmp;
                     return this.evaluateArithmetic(str);
                 }
                 
@@ -1933,6 +2016,49 @@
                 // Avaliação aritmética aprimorada para melhor compatibilidade com Portugol
                 try {
                     let jsExpr = expr.trim();
+
+                    // Tratamento direto de comparações de nível superior (>, <, >=, <=, ==, !=, <>)
+                    // Isso evita depender do eval e garante que acessos a vetores sejam resolvidos corretamente
+                    const compareAtTopLevel = (s) => {
+                        let p = 0; // parênteses
+                        let b = 0; // colchetes
+                        let inStr = false;
+                        const ops = ['>=', '<=', '==', '!=', '<>', '>', '<'];
+                        for (let i = 0; i < s.length; i++) {
+                            const ch = s[i];
+                            if (ch === '"' && s[i - 1] !== '\\') inStr = !inStr;
+                            if (inStr) continue;
+                            if (ch === '(') { p++; continue; }
+                            if (ch === ')') { p--; continue; }
+                            if (ch === '[') { b++; continue; }
+                            if (ch === ']') { b--; continue; }
+                            if (p === 0 && b === 0) {
+                                for (const op of ops) {
+                                    if (s.slice(i, i + op.length) === op) {
+                                        const left = s.slice(0, i).trim();
+                                        const right = s.slice(i + op.length).trim();
+                                        // <>
+                                        const effectiveOp = (op === '<>') ? '!=' : op;
+                                        const leftVal = this.evaluateExpression(left);
+                                        const rightVal = this.evaluateExpression(right);
+                                        switch (effectiveOp) {
+                                            case '>': return this._toNumber(leftVal) > this._toNumber(rightVal);
+                                            case '<': return this._toNumber(leftVal) < this._toNumber(rightVal);
+                                            case '>=': return this._toNumber(leftVal) >= this._toNumber(rightVal);
+                                            case '<=': return this._toNumber(leftVal) <= this._toNumber(rightVal);
+                                            case '==': return leftVal === rightVal;
+                                            case '!=': return leftVal !== rightVal;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        return null;
+                    };
+                    const cmpResult = compareAtTopLevel(jsExpr);
+                    if (cmpResult !== null) {
+                        return cmpResult;
+                    }
 
                     // Resolver chamadas de função dentro da expressão avaliando primeiro as mais internas
                     const isIdentChar = (ch) => /[a-zA-Z0-9_]/.test(ch);
@@ -2071,8 +2197,23 @@
                         // a desigualdade deve ser tratada antes do tratamento genérico de '='
                         .replace(/<>/g, '!=');
 
-                    // Substituir '=' simples por '==' (evitar <=, >=, ==, !=)
-                    jsExpr = jsExpr.replace(/(?<![<>!])=(?![=])/g, '==');
+                    // Substituir '=' simples por '==' (evitar <=, >=, ==, !=) sem lookbehind (compatível com mais navegadores)
+                    {
+                        let converted = '';
+                        for (let i = 0; i < jsExpr.length; i++) {
+                            const ch = jsExpr[i];
+                            if (ch === '=') {
+                                const prev = i > 0 ? jsExpr[i - 1] : '';
+                                const next = i + 1 < jsExpr.length ? jsExpr[i + 1] : '';
+                                if (prev !== '<' && prev !== '>' && prev !== '!' && next !== '=') {
+                                    converted += '==';
+                                    continue;
+                                }
+                            }
+                            converted += ch;
+                        }
+                        jsExpr = converted;
+                    }
 
                     // Avaliar variáveis
                     for (const [varName] of this.env.variables) {
@@ -2082,6 +2223,10 @@
                             jsExpr = jsExpr.replace(regex, String(resolvedVal));
                         }
                     }
+
+                    // Resolver novamente acessos a vetores após substituição de variáveis
+                    // (cobre casos onde a etapa anterior introduz expressões dentro de colchetes)
+                    jsExpr = resolveArrayAccesses(jsExpr);
 
                     return eval(jsExpr) || 0;
                 } catch (error) {
@@ -2101,6 +2246,15 @@
             }
 
             // Auxiliares para parâmetros por referência e vetores
+        _toNumber(v) {
+            if (typeof v === 'number') return v;
+            if (typeof v === 'boolean') return v ? 1 : 0;
+            if (typeof v === 'string') {
+                const n = parseFloat(v.replace(',', '.'));
+                return isNaN(n) ? 0 : n;
+            }
+            return 0;
+        }
             splitTopLevel(str) {
                 const expressions = [];
                 let current = '';
@@ -2325,7 +2479,7 @@ inicio
     vetor[5] <- 2
 
     para i de 1 ate 4 faca
-        para j de 1 ate 5 - i faca
+        para j de 1 ate 4 faca
             se vetor[j] > vetor[j+1] entao
                 temp <- vetor[j]
                 vetor[j] <- vetor[j+1]
