@@ -2313,34 +2313,31 @@
             }
 
             getDefaultCode() {
-                return `algoritmo "SomaRecursivaMedia"
+                return `algoritmo "BubbleSort"
 var
-   N: inteiro
-   media: real
-
-funcao somaRecursiva(qtd: inteiro): real
-var
-   valor: real
+    i, j, temp: inteiro
+    vetor: vetor[1..5] de inteiro
 inicio
-   se (qtd = 0) entao
-      retorne 0
-   senao
-      escreval("Digite um valor: ")
-      leia(valor)
-      retorne valor + somaRecursiva(qtd - 1)
-   fimse
-fimfuncao
+    vetor[1] <- 5
+    vetor[2] <- 3
+    vetor[3] <- 4
+    vetor[4] <- 1
+    vetor[5] <- 2
 
-inicio
-   escreval("Quantos valores deseja somar?")
-   leia(N)
-   se N > 0 entao
-      media <- somaRecursiva(N)
-      media <- media/N
-      escreval("A média dos ", N, " valores é: ", media)
-   senao
-      escreval("N deve ser maior que 0")
-   fimse
+    para i de 1 ate 4 faca
+        para j de 1 ate 5 - i faca
+            se vetor[j] > vetor[j+1] entao
+                temp <- vetor[j]
+                vetor[j] <- vetor[j+1]
+                vetor[j+1] <- temp
+            fimse
+        fimpara
+    fimpara
+
+    escreval("Vetor ordenado:")
+    para i de 1 ate 5 faca
+        escreva(vetor[i], " ")
+    fimpara
 fimalgoritmo`;
             }
 
