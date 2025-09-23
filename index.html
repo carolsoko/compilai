@@ -2071,8 +2071,23 @@
                         // a desigualdade deve ser tratada antes do tratamento genérico de '='
                         .replace(/<>/g, '!=');
 
-                    // Substituir '=' simples por '==' (evitar <=, >=, ==, !=)
-                    jsExpr = jsExpr.replace(/(?<![<>!])=(?![=])/g, '==');
+                    // Substituir '=' simples por '==' (evitar <=, >=, ==, !=) sem lookbehind (compatível com mais navegadores)
+                    {
+                        let converted = '';
+                        for (let i = 0; i < jsExpr.length; i++) {
+                            const ch = jsExpr[i];
+                            if (ch === '=') {
+                                const prev = i > 0 ? jsExpr[i - 1] : '';
+                                const next = i + 1 < jsExpr.length ? jsExpr[i + 1] : '';
+                                if (prev !== '<' && prev !== '>' && prev !== '!' && next !== '=') {
+                                    converted += '==';
+                                    continue;
+                                }
+                            }
+                            converted += ch;
+                        }
+                        jsExpr = converted;
+                    }
 
                     // Avaliar variáveis
                     for (const [varName] of this.env.variables) {
