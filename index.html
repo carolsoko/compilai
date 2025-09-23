@@ -2098,6 +2098,10 @@
                         }
                     }
 
+                    // Resolver novamente acessos a vetores após substituição de variáveis
+                    // (cobre casos onde a etapa anterior introduz expressões dentro de colchetes)
+                    jsExpr = resolveArrayAccesses(jsExpr);
+
                     return eval(jsExpr) || 0;
                 } catch (error) {
                     if (error && error.__portugol_need_input__) {
