@@ -1776,16 +1776,16 @@
                 if (str.includes('[')) {
                     const arrayMatch = str.match(/^(\w+)\[(.+)\]$/);
                     if (arrayMatch) {
-                        const arrayName = arrayMatch[1];
+                        const rawName = arrayMatch[1];
                         const inside = arrayMatch[2];
                         const indexExprs = this.splitTopLevel(inside);
                         const indices = indexExprs.map(expr => this.evaluateExpression(expr));
                         
-                        if (this.env.variables.has(arrayName)) {
-                            const arrayObj = this.getVariableValue(arrayName);
-                            if (arrayObj && arrayObj.data) {
-                                return this.getArrayElement(arrayObj, indices);
-                            }
+                        // Resolver nome de variável sem diferenciar maiúsculas/minúsculas
+                        const arrayName = this.resolveVariableName(rawName);
+                        const arrayObj = this.getVariableValue(arrayName);
+                        if (arrayObj && arrayObj.data) {
+                            return this.getArrayElement(arrayObj, indices);
                         }
                         return 0;
                     }
