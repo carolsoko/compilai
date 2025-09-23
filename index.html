@@ -1934,6 +1934,49 @@
                 try {
                     let jsExpr = expr.trim();
 
+                    // Tratamento direto de comparações de nível superior (>, <, >=, <=, ==, !=, <>)
+                    // Isso evita depender do eval e garante que acessos a vetores sejam resolvidos corretamente
+                    const compareAtTopLevel = (s) => {
+                        let p = 0; // parênteses
+                        let b = 0; // colchetes
+                        let inStr = false;
+                        const ops = ['>=', '<=', '==', '!=', '<>', '>', '<'];
+                        for (let i = 0; i < s.length; i++) {
+                            const ch = s[i];
+                            if (ch === '"' && s[i - 1] !== '\\') inStr = !inStr;
+                            if (inStr) continue;
+                            if (ch === '(') { p++; continue; }
+                            if (ch === ')') { p--; continue; }
+                            if (ch === '[') { b++; continue; }
+                            if (ch === ']') { b--; continue; }
+                            if (p === 0 && b === 0) {
+                                for (const op of ops) {
+                                    if (s.slice(i, i + op.length) === op) {
+                                        const left = s.slice(0, i).trim();
+                                        const right = s.slice(i + op.length).trim();
+                                        // <>
+                                        const effectiveOp = (op === '<>') ? '!=' : op;
+                                        const leftVal = this.evaluateExpression(left);
+                                        const rightVal = this.evaluateExpression(right);
+                                        switch (effectiveOp) {
+                                            case '>': return this._toNumber(leftVal) > this._toNumber(rightVal);
+                                            case '<': return this._toNumber(leftVal) < this._toNumber(rightVal);
+                                            case '>=': return this._toNumber(leftVal) >= this._toNumber(rightVal);
+                                            case '<=': return this._toNumber(leftVal) <= this._toNumber(rightVal);
+                                            case '==': return leftVal === rightVal;
+                                            case '!=': return leftVal !== rightVal;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        return null;
+                    };
+                    const cmpResult = compareAtTopLevel(jsExpr);
+                    if (cmpResult !== null) {
+                        return cmpResult;
+                    }
+
                     // Resolver chamadas de função dentro da expressão avaliando primeiro as mais internas
                     const isIdentChar = (ch) => /[a-zA-Z0-9_]/.test(ch);
                     const resolveFunctionCalls = (s) => {
@@ -2120,6 +2163,15 @@
             }
 
             // Auxiliares para parâmetros por referência e vetores
+        _toNumber(v) {
+            if (typeof v === 'number') return v;
+            if (typeof v === 'boolean') return v ? 1 : 0;
+            if (typeof v === 'string') {
+                const n = parseFloat(v.replace(',', '.'));
+                return isNaN(n) ? 0 : n;
+            }
+            return 0;
+        }
             splitTopLevel(str) {
                 const expressions = [];
                 let current = '';
