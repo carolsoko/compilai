@@ -2,15 +2,15 @@
 
 Versão: 1.0  
 Data: 25/09/2025  
-Autor: Equipe de Documentação
+Autor: Ana Carolina Sokolonski
 
 ---
 
 ## Objetivo
 
-Este manual ensina, passo a passo, como programar no CompilAI, cobrindo desde a estrutura básica de um programa até estruturas de seleção, repetição, organização de cabeçalhos, funções e procedimentos, vetores e matrizes, e exemplos completos de algoritmos clássicos.
+Este manual ensina, passo a passo, como programar no Compilaí, cobrindo desde a estrutura básica de um programa até estruturas de seleção, repetição, organização de cabeçalhos, funções e procedimentos, vetores e matrizes, e exemplos completos de algoritmos clássicos.
 
-Observação: a sintaxe utilizada é inspirada em notações educacionais de pseudo‑código (Portugol). Palavras‑chave podem variar na sua instalação do CompilAI; adapte os identificadores se sua distribuição usar nomes diferentes.
+Observação: a sintaxe utilizada é inspirada em notações educacionais de pseudo‑código (Portugol). Palavras‑chave podem variar na sua instalação do Compilaí; adapte os identificadores se sua distribuição usar nomes diferentes.
 
 ---
 
@@ -36,7 +36,7 @@ Observação: a sintaxe utilizada é inspirada em notações educacionais de pse
 
 ## Introdução e primeiro programa
 
-Seu primeiro programa costuma imprimir uma mensagem. No CompilAI, a estrutura geral segue bloco `algoritmo … inicio … fim_algoritmo`.
+Seu primeiro programa costuma imprimir uma mensagem. No Compilaí, a estrutura geral segue bloco `algoritmo … inicio … fim_algoritmo`.
 
 ```text
 algoritmo "OlaMundo"
@@ -45,7 +45,7 @@ algoritmo "OlaMundo"
     fim_algoritmo
 ```
 
-Execute para ver a mensagem no console. Se estiver usando um IDE do CompilAI, clique em Executar. Se usar linha de comando, consulte a documentação da sua distribuição.
+Execute para ver a mensagem no console. Se estiver usando um IDE do Compilaí, clique em Executar. Se usar linha de comando, consulte a documentação da sua distribuição.
 
 ---
 
@@ -315,7 +315,7 @@ fim_para
 - Conversão: `inteiro(cadeia)`, `real(cadeia)`, `cadeia(inteiro)`
 
 ```text
-cadeia s <- "CompilAI"
+cadeia s <- "Compilaí"
 escreval("len = ", tamanho(s))
 escreval("sub = ", subcadeia(s, 0, 5))
 ```
@@ -517,4 +517,4 @@ ate (<condicao>)
 
 ---
 
-Dica: Se sua versão do CompilAI tiver diferenças de sintaxe (por exemplo, `fim` em vez de `fim_algoritmo`, `escreval` ausente, ou índices começando em 1), adapte mantendo a lógica e a estrutura apresentadas aqui.
+Dica: Se sua versão do Compilaí tiver diferenças de sintaxe (por exemplo, `fim` em vez de `fim_algoritmo`, `escreval` ausente, ou índices começando em 1), adapte mantendo a lógica e a estrutura apresentadas aqui.
