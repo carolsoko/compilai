@@ -1,4 +1,4 @@
-# Manual de Programação no CompilAI
+# Manual de Programação no Compilaí
 
 Versão: 1.0  
 Data: 25/09/2025  
