@@ -908,7 +908,18 @@
                         continue;
                     }
 
-                    if (ends.length > 0 && ends.includes(line)) {
+                    // Tratar terminadores com sufixos (ex.: 'caso 1:' deve encerrar quando 'caso' é terminador)
+                    let isTerminator = false;
+                    if (ends.length > 0) {
+                        for (const end of ends) {
+                            const e = String(end).toLowerCase();
+                            if (line === e || line.startsWith(e + ' ') || line.startsWith(e + ':')) {
+                                isTerminator = true;
+                                break;
+                            }
+                        }
+                    }
+                    if (isTerminator) {
                         // Se múltiplos possíveis tokens de término forem fornecidos (por exemplo, 'senao' ou 'fimse'),
                         // NÃO consuma o token de término aqui. O chamador irá tratá-lo (necessário para lidar com o 'senao').
                         // Se apenas um token de término for fornecido, consuma-o para preservar o comportamento anterior.
@@ -1161,7 +1172,7 @@
             // ESCOLHA/CASO/OUTROCASO/FIMESCOLHA
             parseSwitchStatement() {
                 const line = this.getCurrentLine();
-                const m = line.match(/^escolha\s*\((.+)\)$/i);
+                const m = line.match(/^escolha\s*\((.+)\)\s*$/i);
                 if (!m) {
                     this.errors.push('Formato de ESCOLHA inválido');
                     this.nextLine();
@@ -1183,7 +1194,7 @@
                         break;
                     }
                     if (/^caso\s+/.test(cur.toLowerCase())) {
-                        const caseMatch = cur.match(/^caso\s+(.+?):?$/i);
+                        const caseMatch = cur.match(/^caso\s+(.+?)\s*:\s*$/i);
                         const caseExpr = caseMatch ? (caseMatch[1] || '').trim() : '';
                         this.nextLine();
                         // Corpo do caso vai até próximo 'caso', 'outrocaso' ou 'fimescolha'
