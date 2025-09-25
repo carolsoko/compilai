@@ -86,7 +86,7 @@ algoritmo "NomeDoPrograma"
         // Corpo principal
         escreval("Digite um número: ")
         leia(a)
-        escreval("Você digitou: ", a, "\n")
+        escreval("Você digitou: ", a)
     fimalgoritmo
 ```
 
@@ -242,26 +242,31 @@ ate (numero > 0)
 - funcao: retorna um valor; pode receber parâmetros
 
 ```text
+algoritmo "ExemploFuncoes"
+
+var
+   n: inteiro
+
 procedimento cabecalho()
-    escreval("==== Sistema XYZ ====")
-    escreval("Autor: Você")
+inicio
+   escreval("==== Sistema XYZ ====")
+   escreval("Autor: Você")
 fimprocedimento
 
-funcao inteiro fatorial(inteiro n)
-    se (n <= 1) entao
-        retorne 1
-    fimse
-    retorne n * fatorial(n - 1)
+funcao fatorial(n: inteiro): inteiro
+inicio
+   se (n <= 1) entao
+      retorne 1
+   fimse
+   retorne n * fatorial(n - 1)
 fimfuncao
 
-algoritmo "ExemploFuncoes"
-    var inteiro n
-    inicio
-        cabecalho()
-        escreva("n = ")
-        leia(n)
-        escreval("fatorial = ", fatorial(n))
-    fimalgoritmo
+inicio
+   cabecalho()
+   escreva("n = ")
+   leia(n)
+   escreval("fatorial = ", fatorial(n))
+fimalgoritmo
 ```
 
 Parâmetros por valor (padrão) e por referência (quando disponível) variam conforme distribuição. Se suportado, `referencia` antes do parâmetro indica passagem por referência.
