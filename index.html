@@ -451,10 +451,10 @@
                 <div style="margin-bottom: 20px;">
                     <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
                         <span>Progresso Geral</span>
-                        <span>38 de 39 recursos</span>
+                        <span>39 de 40 recursos</span>
                     </div>
                     <div class="progress-bar">
-                        <div class="progress-fill" style="width: 97%;"></div>
+                        <div class="progress-fill" style="width: 98%;"></div>
                     </div>
                 </div>
 
@@ -521,6 +521,10 @@
                             <i data-lucide="check-circle" class="feature-implemented"></i>
                             <span>Operador xou (XOR lógico)</span>
                         </div>
+                        <div class="feature-item">
+                            <i data-lucide="check-circle" class="feature-implemented"></i>
+                            <span>Operador mod (%)</span>
+                        </div>
                     </div>
 
                     <!-- Comandos Específicos -->
@@ -537,6 +541,15 @@
                         <div class="feature-item">
                             <i data-lucide="x-circle" class="feature-missing"></i>
                             <span>arquivo "nome" (stub - parcial)</span>
+                        </div>
+                    </div>
+
+                    <!-- Estruturas de Seleção -->
+                    <div class="card">
+                        <h3 style="color: var(--editor-success); margin-top: 0;">✓ Estruturas de Seleção (100%)</h3>
+                        <div class="feature-item">
+                            <i data-lucide="check-circle" class="feature-implemented"></i>
+                            <span>ESCOLHA, CASO, OUTROCASO, FIMESCOLHA</span>
                         </div>
                     </div>
 
@@ -936,6 +949,8 @@
                     return this.parseWhileStatement();
                 } else if (trimmed.startsWith('repita')) {
                     return this.parseRepeatStatement();
+                } else if (trimmed.startsWith('escolha ')) {
+                    return this.parseSwitchStatement();
                 } else if (trimmed.startsWith('retorna') || trimmed.startsWith('retorne')) {
                     // Instrução de retorno dentro de funções
                     const m = line.match(/^retorn[ae]\s*(.*)$/i);
@@ -1141,6 +1156,58 @@
                     body,
                     condition: untilMatch[1]
                 };
+            }
+
+            // ESCOLHA/CASO/OUTROCASO/FIMESCOLHA
+            parseSwitchStatement() {
+                const line = this.getCurrentLine();
+                const m = line.match(/^escolha\s*\((.+)\)$/i);
+                if (!m) {
+                    this.errors.push('Formato de ESCOLHA inválido');
+                    this.nextLine();
+                    return null;
+                }
+
+                const discriminant = m[1].trim();
+                this.nextLine();
+
+                const cases = [];
+                let defaultBody = [];
+                let reachedEnd = false;
+                
+                while (!this.isAtEnd()) {
+                    const cur = (this.getCurrentLine() || '').trim();
+                    if (/^fimescolha$/i.test(cur)) {
+                        this.nextLine();
+                        reachedEnd = true;
+                        break;
+                    }
+                    if (/^caso\s+/.test(cur.toLowerCase())) {
+                        const caseMatch = cur.match(/^caso\s+(.+?):?$/i);
+                        const caseExpr = caseMatch ? (caseMatch[1] || '').trim() : '';
+                        this.nextLine();
+                        // Corpo do caso vai até próximo 'caso', 'outrocaso' ou 'fimescolha'
+                        const body = this.parseBody('caso', 'outrocaso', 'fimescolha');
+                        cases.push({ test: caseExpr, body });
+                        continue;
+                    }
+                    if (/^outrocaso\b/i.test(cur)) {
+                        this.nextLine();
+                        defaultBody = this.parseBody('fimescolha');
+                        // 'parseBody' com único terminador consome 'fimescolha'
+                        reachedEnd = true;
+                        break;
+                    }
+                    // Linha inesperada dentro de escolha
+                    this.errors.push('Linha inesperada dentro de ESCOLHA: ' + cur);
+                    this.nextLine();
+                }
+
+                if (!reachedEnd) {
+                    this.errors.push('ESCOLHA sem FIMESCOLHA');
+                }
+
+                return { type: 'switch', discriminant, cases, defaultBody };
             }
 
             parseExpressionList(str) {
@@ -1385,6 +1452,9 @@
                         break;
                     case 'repeat':
                         this.executeRepeat(stmt);
+                        break;
+                    case 'switch':
+                        this.executeSwitch(stmt);
                         break;
                     case 'return':
                         // Sinalizar retorno de função com valor
@@ -1666,6 +1736,27 @@
                     } else {
                         throw error;
                     }
+                }
+            }
+
+            executeSwitch(stmt) {
+                const discValue = this.evaluateExpression(stmt.discriminant);
+                let executed = false;
+                for (const c of (stmt.cases || [])) {
+                    if (executed) break;
+                    const testVal = this.evaluateExpression(c.test);
+                    // Comparação por igualdade fraca ao estilo VisualG (numérico quando possível)
+                    const left = this._toNumber(discValue);
+                    const right = this._toNumber(testVal);
+                    const equals = (isNaN(left) || isNaN(right)) ? (String(discValue) === String(testVal)) : (left === right);
+                    if (equals) {
+                        this.executeStatements(c.body || []);
+                        executed = true;
+                        break;
+                    }
+                }
+                if (!executed && stmt.defaultBody && stmt.defaultBody.length) {
+                    this.executeStatements(stmt.defaultBody);
                 }
             }
 
