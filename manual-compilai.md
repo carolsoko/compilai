@@ -36,13 +36,13 @@ Observação: a sintaxe utilizada é inspirada em notações educacionais de pse
 
 ## Introdução e primeiro programa
 
-Seu primeiro programa costuma imprimir uma mensagem. No Compilaí, a estrutura geral segue bloco `algoritmo … inicio … fim_algoritmo`.
+Seu primeiro programa costuma imprimir uma mensagem. No Compilaí, a estrutura geral segue bloco `algoritmo … inicio … fimalgoritmo`.
 
 ```text
 algoritmo "OlaMundo"
     inicio
         escreva("Olá, mundo!\n")
-    fim_algoritmo
+    fimalgoritmo
 ```
 
 Execute para ver a mensagem no console. Se estiver usando um IDE do Compilaí, clique em Executar. Se usar linha de comando, consulte a documentação da sua distribuição.
@@ -87,7 +87,7 @@ algoritmo "NomeDoPrograma"
         escreval("Digite um número: ")
         leia(a)
         escreval("Você digitou: ", a, "\n")
-    fim_algoritmo
+    fimalgoritmo
 ```
 
 ---
@@ -158,7 +158,7 @@ se (idade >= 18) entao
     escreval("Maior de idade")
 senao
     escreval("Menor de idade")
-fim_se
+fimse
 ```
 
 Encadeamento:
@@ -172,7 +172,7 @@ senao se (nota >= 5.0) entao
     escreval("C")
 senao
     escreval("D")
-fim_se
+fimse
 ```
 
 ### Escolha / Caso (switch)
@@ -190,7 +190,7 @@ escolha opcao
         escreval("Sair")
     outrocaso:
         escreval("Opção inválida")
-fim_escolha
+fimescolha
 ```
 
 ---
@@ -203,7 +203,7 @@ fim_escolha
 inteiro i
 para i de 1 ate 10 passo 1 faca
     escreval(i)
-fim_para
+fimpara
 ```
 
 Contagem regressiva:
@@ -211,7 +211,7 @@ Contagem regressiva:
 ```text
 para i de 10 ate 1 passo -1 faca
     escreval(i)
-fim_para
+fimpara
 ```
 
 ### Enquanto (pré‑condição)
@@ -221,7 +221,7 @@ inteiro x <- 0
 enquanto (x < 5) faca
     escreval("x = ", x)
     x <- x + 1
-fim_enquanto
+fimenquanto
 ```
 
 ### Repita até (pós‑condição)
@@ -245,14 +245,14 @@ ate (numero > 0)
 procedimento cabecalho()
     escreval("==== Sistema XYZ ====")
     escreval("Autor: Você")
-fim_procedimento
+fimprocedimento
 
 funcao inteiro fatorial(inteiro n)
     se (n <= 1) entao
         retorne 1
-    fim_se
+    fimse
     retorne n * fatorial(n - 1)
-fim_funcao
+fimfuncao
 
 algoritmo "ExemploFuncoes"
     var inteiro n
@@ -261,7 +261,7 @@ algoritmo "ExemploFuncoes"
         escreva("n = ")
         leia(n)
         escreval("fatorial = ", fatorial(n))
-    fim_algoritmo
+    fimalgoritmo
 ```
 
 Parâmetros por valor (padrão) e por referência (quando disponível) variam conforme distribuição. Se suportado, `referencia` antes do parâmetro indica passagem por referência.
@@ -282,12 +282,12 @@ inteiro i
 para i de 0 ate n-1 passo 1 faca
     escreva("v[", i, "] = ")
     leia(v[i])
-fim_para
+fimpara
 
 // impressão
 para i de 0 ate n-1 passo 1 faca
     escreval("v[", i, "] = ", v[i])
-fim_para
+fimpara
 ```
 
 ### Matriz (bidimensional)
@@ -301,8 +301,8 @@ inteiro i, j
 para i de 0 ate lin-1 passo 1 faca
     para j de 0 ate col-1 passo 1 faca
         m[i][j] <- i * 10 + j
-    fim_para
-fim_para
+    fimpara
+fimpara
 ```
 
 ---
@@ -357,11 +357,11 @@ algoritmo "Calculadora"
                 escreval("Erro: divisão por zero")
             senao
                 escreval(a / b)
-            fim_se
+            fimse
         senao
             escreval("Operação inválida")
-        fim_se
-    fim_algoritmo
+        fimse
+    fimalgoritmo
 ```
 
 ### 2) Fatorial (iterativo e recursivo)
@@ -371,16 +371,16 @@ funcao inteiro fatIter(inteiro n)
     inteiro r <- 1, i
     para i de 2 ate n passo 1 faca
         r <- r * i
-    fim_para
+    fimpara
     retorne r
-fim_funcao
+fimfuncao
 
 funcao inteiro fatRec(inteiro n)
     se (n <= 1) entao
         retorne 1
-    fim_se
+    fimse
     retorne n * fatRec(n - 1)
-fim_funcao
+fimfuncao
 ```
 
 ### 3) Fibonacci até N termos
@@ -393,22 +393,22 @@ procedimento fibonacci(inteiro n)
         t <- a + b
         a <- b
         b <- t
-    fim_para
+    fimpara
     escreval("")
-fim_procedimento
+fimprocedimento
 ```
 
 ### 4) Verificador de número primo
 
 ```text
 funcao logico ehPrimo(inteiro n)
-    se (n < 2) entao retorne falso fim_se
+    se (n < 2) entao retorne falso fimse
     inteiro i
     para i de 2 ate raiz(n) passo 1 faca
-        se (n % i = 0) entao retorne falso fim_se
-    fim_para
+        se (n % i = 0) entao retorne falso fimse
+    fimpara
     retorne verdadeiro
-fim_funcao
+fimfuncao
 ```
 
 ### 5) Ordenação (Bubble Sort)
@@ -422,10 +422,10 @@ procedimento bubbleSort(inteiro v[], inteiro n)
                 tmp <- v[j]
                 v[j] <- v[j+1]
                 v[j+1] <- tmp
-            fim_se
-        fim_para
-    fim_para
-fim_procedimento
+            fimse
+        fimpara
+    fimpara
+fimprocedimento
 ```
 
 ### 6) Busca binária (vetor ordenado)
@@ -441,10 +441,10 @@ funcao inteiro buscaBinaria(inteiro v[], inteiro n, inteiro alvo)
             ini <- meio + 1
         senao
             fim <- meio - 1
-        fim_se
-    fim_enquanto
+        fimse
+    fimenquanto
     retorne -1
-fim_funcao
+fimfuncao
 ```
 
 ---
@@ -461,11 +461,11 @@ fim_funcao
 
 ## Apêndice A: Tabela de palavras‑chave (referência rápida)
 
-- Blocos: `algoritmo`, `inicio`, `fim_algoritmo`
+- Blocos: `algoritmo`, `inicio`, `fimalgoritmo`
 - Declarações: `var`, `const`, `funcao`, `procedimento`, `retorne`
 - I/O: `escreva`, `escreval`, `leia`
-- Seleção: `se`, `senao`, `fim_se`, `escolha`, `caso`, `outrocaso`, `fim_escolha`
-- Repetição: `para`, `fim_para`, `enquanto`, `fim_enquanto`, `repita`, `ate`
+- Seleção: `se`, `senao`, `fimse`, `escolha`, `caso`, `outrocaso`, `fimescolha`
+- Repetição: `para`, `fimpara`, `enquanto`, `fimenquanto`, `repita`, `ate`
 - Tipos: `inteiro`, `real`, `logico`, `cadeia`, `caractere`
 - Lógicos: `verdadeiro`, `falso`, `e`, `ou`, `nao`
 
@@ -493,7 +493,7 @@ fim_funcao
 funcao <tipo> nome(<parametros>)
     // ...
     retorne <valor>
-fim_funcao
+fimfuncao
 ```
 
 ### Modelo de laços
@@ -502,12 +502,12 @@ fim_funcao
 // Para
 para i de <ini> ate <fim> passo <p> faca
     // corpo
-fim_para
+fimpara
 
 // Enquanto
 enquanto (<condicao>) faca
     // corpo
-fim_enquanto
+fimenquanto
 
 // Repita até
 repita
@@ -516,5 +516,3 @@ ate (<condicao>)
 ```
 
 ---
-
-Dica: Se sua versão do Compilaí tiver diferenças de sintaxe (por exemplo, `fim` em vez de `fim_algoritmo`, `escreval` ausente, ou índices começando em 1), adapte mantendo a lógica e a estrutura apresentadas aqui.
