@@ -84,9 +84,9 @@ algoritmo "NomeDoPrograma"
 
     inicio
         // Corpo principal
-        escreva("Digite um número: ")
+        escreval("Digite um número: ")
         leia(a)
-        escreva("Você digitou: ", a, "\n")
+        escreval("Você digitou: ", a, "\n")
     fim_algoritmo
 ```
 
