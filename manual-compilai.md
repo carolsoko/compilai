@@ -1,6 +1,6 @@
 # Manual de Programação no Compilaí
 
-Versão: 1.0  
+Versão: 3.3  
 Data: 25/09/2025  
 Autor: Ana Carolina Sokolonski
 
